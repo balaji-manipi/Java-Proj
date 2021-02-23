@@ -1,0 +1,33 @@
+node('master') 
+{
+    stage('ContinuousDownload') 
+    {
+        git 'https://github.com/balaji-manipi/Java-Proj.git'
+    }
+    
+    stage('ContinouseBuild') 
+    {
+        sh 'mvn package'
+    }
+    
+    stage('ContinouseDeployment') 
+    {
+        
+        sh 'scp /root/.jenkins/workspace/Development_Script/webapp/target/webapp.war root@172.31.24.78:/var/lib/tomcat8/webapps/testenv.war'
+        
+    }
+    
+    stage('ContinusTesting')
+    {
+        git 'https://github.com/balaji-manipi/Func_testing.git'
+        sh 'java -jar /root/.jenkins/workspace/Function_Testing/testing.jar'
+    }
+    
+        stage('ContinouseDelivery') 
+    {
+        input 'Waiting for Approval from the RM'
+        sh 'scp /root/.jenkins/workspace/Development_Script/webapp/target/webapp.war root@172.31.27.82:/var/lib/tomcat8/webapps/prodenv.war'
+        
+    }
+    
+}
