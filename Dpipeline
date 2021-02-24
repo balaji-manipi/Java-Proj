@@ -38,15 +38,20 @@ pipeline
         sh 'java -jar /root/.jenkins/workspace/Function_Testing/testing.jar'
             }
         }
-    stage('Continuous Delivery')
-        {
-            steps
-            {
-               
+	}
+}
+post
+{
+	success
+		{               
         input 'Waiting for Approval from the RM'
         sh 'scp /root/.jenkins/workspace/Development_Script/webapp/target/webapp.war root@172.31.27.82:/var/lib/tomcat8/webapps/prodenv.war'
             }
-        }   
+    failure
+		{
+			mail bcc: '', body: 'Jenkins Job has failed, check the logs of Jenkins', cc: '', from: '', replyTo: '', subject: 'Jankins Job Failed', to: 'mbalajimanapi@gmail.com'
+		}
+}
     
         
     }
